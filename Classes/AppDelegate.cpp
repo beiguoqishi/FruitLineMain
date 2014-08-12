@@ -1,5 +1,6 @@
 #include "AppDelegate.h"
-#include "Player.h"
+#include "PlayerScene.h"
+#include "StartScene.h"
 
 USING_NS_CC;
 
@@ -29,7 +30,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
     director->setAnimationInterval(1.0 / 60);
 
     // create a scene. it's an autorelease object
-    auto scene = Player::createScene();
+    auto scene = Start::createScene();
 
     // run
     director->runWithScene(scene);

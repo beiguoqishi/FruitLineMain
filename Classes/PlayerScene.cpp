@@ -1,4 +1,4 @@
-#include "Player.h"
+#include "PlayerScene.h"
 #include "VisibleRect.h"
 
 USING_NS_CC;

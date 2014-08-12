@@ -28,16 +28,13 @@ bool Player::init()
 		return false;
 	}
 
-	Size visibleSize = Director::getInstance()->getVisibleSize();
-	Vec2 origin = Director::getInstance()->getVisibleOrigin();
-
 	initComponent();
 
 	return true;
 }
 
 void Player::initComponent() {
-	auto bg = Sprite::create("bg.jpg");
+	auto bg = Sprite::create("bg.png");
 	bg->setAnchorPoint(Vec2(0.5,0));
 	bg->setPosition(VisibleRect::bottom());
 	addChild(bg);

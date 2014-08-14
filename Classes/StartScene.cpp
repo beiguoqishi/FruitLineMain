@@ -51,7 +51,7 @@ void Start::bindPlayListener(Sprite *playBtn) {
         auto playerScene = Player::createScene();
         if (director->getRunningScene()) {
             auto flipXLeft = TransitionFlipX::create(1, playerScene, TransitionScene::Orientation::RIGHT_OVER);
-            director->replaceScene(flipXLeft);
+            director->replaceScene(playerScene);
         } else {
             director->runWithScene(playerScene);
         }

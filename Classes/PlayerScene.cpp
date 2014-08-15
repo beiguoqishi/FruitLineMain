@@ -73,14 +73,26 @@ void Player::initPlayGrid() {
 
 	bindGridEvent();
 
+	initGridElemCoord();
+
 	fillGrid();
+}
+
+void Player::initGridElemCoord() {
+	for (int i = 0; i < ROW; i++) {
+		for (int j = 0; j < COL; j++) {
+			Elem& el = elems[i][j];
+			el.row = i;
+			el.col = j;
+		}
+	}
 }
 
 void Player::fillGrid() {
 	srand(time(0));
 	for (int i = 0; i < ROW; i++) {
 		for (int j = 0; j < COL; j++) {
-			Elem el = elems[i][j];
+			Elem& el = elems[i][j];
 			if (el.blank) {
 				auto fruit = generateFruit(i,j,el);
 				playGrid->addChild(fruit);
@@ -183,6 +195,68 @@ void Player::doSelFruit(Elem& el) {
 	auto scale = ScaleBy::create(0.4, 0.7);
 	auto scaleBack = scale->reverse();
 	selFruit->runAction(RepeatForever::create(Sequence::create(scale, scaleBack, nullptr)));
+
+
+}
+
+bool Player::elemAdjacent(const Elem& l,const Elem& r) {
+	return abs(l.row - r.row) <= 1 && abs(l.col - r.col) <= 1;
+}
+
+void Player::joinSelFruits(const Elem& el) {
+	int total = selFruits.size();
+	bool popTop = false,updateLine = false;
+	const Elem& topEl = selFruits.back();
+	if (total == 0) {
+		selFruits.pushBack(el);
+	}
+	else {
+		if (topEl.fruitType == el.fruitType) {
+			if (!selFruits.contains(el)) {
+				if (!elemAdjacent(el, topEl)) {
+					selFruits.popBack();
+					popTop = true;
+				}
+				selFruits.pushBack(el);
+				updateLine = true;
+			}
+			else {
+				if (total >= 2) {
+					const Elem& rSecond = selFruits.at(total - 2);
+					if (rSecond == el) {
+						selFruits.popBack();
+						popTop = true;
+						updateLine = true;
+					}
+				}
+			}
+		}
+	}
+	if (popTop) {
+		(const_cast<Elem&>(topEl)).selFruit = nullptr;
+	}
+	if (updateLine) {
+		lineFruits();
+	}
+}
+
+void Player::lineFruits() {
+	if (selFruits.size() >= 2) {
+		auto line = static_cast<DrawNode*>(playGrid->getChildByTag(SEL_FRUIT_LINE_TAG));
+		if (line) {
+			line->removeFromParent();
+		}
+		line = DrawNode::create();
+		playGrid->addChild(line, 1, SEL_FRUIT_LINE_TAG);
+		for (Vector<const Elem &>::const_iterator el = selFruits.begin(); el != selFruits.end(); el++) {
+			Vector<const Elem&>::const_iterator next = el++;
+			if (next != selFruits.end()) {
+				auto fromP = (*el).selFruit->getPosition();
+				auto toP = (*next).selFruit->getPosition();
+				line->drawSegment(fromP, toP, 10, Color4F(1, 1, 0, 0.8));
+			}
+		}
+	}
 }
 
 void Player::onTouchGridEnded(Touch* touch, Event* event) {

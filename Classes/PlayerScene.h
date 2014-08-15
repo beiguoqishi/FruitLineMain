@@ -5,7 +5,8 @@
 USING_NS_CC;
 
 enum TAG {
-	LEVEL_SPRITE_TAG
+	LEVEL_SPRITE_TAG,
+	SEL_FRUIT_LINE_TAG
 };
 
 #define ROW 7
@@ -26,7 +27,12 @@ typedef struct FruitElem {
 	bool blank = true;
 	FruitSprite* fruit = nullptr;
 	FruitSprite* selFruit = nullptr;
+	friend bool operator == (const Elem& el1, const Elem& el2);
 } Elem;
+
+bool operator== (const Elem& el1, const Elem& el2)  {
+	return el1.row == el2.row && el1.col == el2.col;
+}
 
 class Player : public cocos2d::Layer
 {
@@ -45,6 +51,7 @@ private:
 	Sprite* playingStatusBg;
 	Sprite* levelSprite;
 	Sprite* playGrid;
+	Vector<const Elem&> selFruits;
 
 	void initComponent();
 	void updatePlayingStatusTip();
@@ -58,6 +65,10 @@ private:
 	int* calculateGridPosByPoint(const Vec2& p);
 	void fruitMoveToDest(FruitSprite* fruit);
 	void doSelFruit(Elem& el);
+	void initGridElemCoord();
+	void joinSelFruits(const Elem& el);
+	bool elemAdjacent(const Elem& l, const Elem& r);
+	void lineFruits();
 };
 
 #endif // __Payer_SCENE_H__
